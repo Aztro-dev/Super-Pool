@@ -35,7 +35,8 @@ fn spawn_balls(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     // Create the balls
-    for i in 0..30 {
+    for i in 0..15 {
+        // 15 balls
         commands
             .spawn(PbrBundle {
                 mesh: meshes.add(Sphere::new(BALL_SIZE)),
