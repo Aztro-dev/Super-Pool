@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
+pub const WALL_LENGTH: f32 = 35.5;
+const WALL_WIDTH: f32 = 68.0;
 pub fn setup_physics(mut commands: Commands) {
-    const WALL_LENGTH: f32 = 35.5;
-    const WALL_WIDTH: f32 = 68.0;
     commands
         .spawn(Collider::cuboid(30.5, 0.1, 64.0))
         .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)))

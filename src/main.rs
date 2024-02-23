@@ -45,7 +45,7 @@ fn setup_graphics(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(SceneBundle {
         scene: asset_server.load("models/luxury-pool-table.glb#Scene0"),
         transform: Transform {
-            translation: Vec3::new(0.0, -44.5, 0.0),
+            translation: Vec3::new(0.0, -44.4, 0.0),
             scale: Vec3::splat(50.0),
             ..default()
         },
