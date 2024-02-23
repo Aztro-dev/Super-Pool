@@ -3,12 +3,20 @@ use bevy_rapier3d::prelude::*;
 
 use crate::setup_physics::WALL_LENGTH;
 
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
+pub enum BallsMovingState {
+    Moving,
+    #[default]
+    NotMoving,
+}
+
 pub struct BallPlugin;
 
 impl Plugin for BallPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_balls)
-            .add_systems(Update, check_scored_ball);
+        app.init_state::<BallsMovingState>()
+            .add_systems(Startup, spawn_balls)
+            .add_systems(Update, (check_scored_ball, check_ball_moving));
     }
 }
 
@@ -120,6 +128,19 @@ fn check_scored_ball(mut commands: Commands, ball_query: Query<(Entity, &Transfo
     }
 }
 
+fn check_ball_moving(
+    ball_query: Query<&Sleeping, With<Ball>>,
+    mut ball_moving_state: ResMut<NextState<BallsMovingState>>,
+) {
+    for sleeping in ball_query.iter() {
+        if !sleeping.sleeping {
+            ball_moving_state.set(BallsMovingState::Moving);
+            return;
+        }
+    }
+    ball_moving_state.set(BallsMovingState::NotMoving);
+}
+
 fn ball(
     ball: Ball,
     pos: Vec2,
@@ -146,6 +167,6 @@ fn ball(
         TransformBundle::from(Transform::from_xyz(pos.x, BALL_SIZE / 2.0, pos.y)),
         Friction::coefficient(1.0),
         Velocity::default(),
-        Sleeping::disabled(),
+        Sleeping::default(),
     )
 }

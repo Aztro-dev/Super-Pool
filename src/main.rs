@@ -11,11 +11,15 @@ use setup_physics::setup_physics;
 mod balls;
 use balls::BallPlugin;
 
+mod stick;
+use stick::StickPlugin;
+
 fn main() {
     App::new()
         .add_plugins((
             DefaultPlugins,
             BallPlugin,
+            StickPlugin,
             LookTransformPlugin,
             FpsCameraPlugin::default(),
             RapierPhysicsPlugin::<NoUserData>::default(),
