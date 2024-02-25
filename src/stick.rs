@@ -26,7 +26,7 @@ fn spawn_stick(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         })
         .insert(RigidBody::Fixed)
-        .insert(Collider::cylinder(10.0, 1.0));
+        .insert(Collider::cuboid(10.0, 10.0, 1.0));
 }
 
 fn move_stick() {
