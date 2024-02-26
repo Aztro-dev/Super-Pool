@@ -20,16 +20,16 @@ impl Plugin for BallPlugin {
     }
 }
 
-#[derive(Debug, Default)]
-enum Side {
+#[derive(Debug, Default, Eq, PartialEq)]
+pub enum Side {
     Stripes,
     Solids,
     #[default]
     Neither,
 }
 
-#[derive(Debug, Default)]
-enum Superpower {
+#[derive(Debug, Default, Eq, PartialEq)]
+pub enum Superpower {
     ExtraPower,
     SecondLife,
     RemoveBall,
@@ -61,9 +61,9 @@ impl Side {
 }
 
 #[derive(Component, Default)]
-struct Ball {
-    side: Side,
-    superpower: Superpower,
+pub struct Ball {
+    pub side: Side,
+    pub superpower: Superpower,
 }
 
 const BALL_SIZE: f32 = 1.8;
@@ -167,6 +167,9 @@ fn ball(
         TransformBundle::from(Transform::from_xyz(pos.x, BALL_SIZE / 2.0, pos.y)),
         Friction::coefficient(1.0),
         Velocity::default(),
-        Sleeping::default(),
+        Sleeping {
+            linear_threshold: 5.0,
+            ..default()
+        },
     )
 }
