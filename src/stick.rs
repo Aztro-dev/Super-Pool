@@ -1,4 +1,4 @@
-use crate::setup_physics::WALL_LENGTH;
+use crate::{balls::BALL_SIZE, setup_physics::WALL_LENGTH};
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
@@ -23,14 +23,17 @@ struct Stick;
 const STICK_LENGTH: f32 = 30.0;
 
 fn spawn_stick(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let mut transform = Transform {
+        translation: Vec3::new(0.0, 10.0, 3.0 * WALL_LENGTH / 2.0),
+        ..default()
+    }
+    .looking_at(Vec3::new(0.0, 0.0, 2.0 * BALL_SIZE), Vec3::Y); // Cue Ball pos
+    transform.rotate_local_y(PI / 2.0);
+
     commands
         .spawn(SceneBundle {
             scene: asset_server.load("models/pool-stick-diff.glb#Scene0"),
-            transform: Transform {
-                translation: Vec3::new(0.0, 10.0, 3.0 * WALL_LENGTH / 2.0),
-                rotation: Quat::from_rotation_y(PI / 2.0),
-                ..default()
-            },
+            transform,
             ..default()
         })
         .insert(RigidBody::KinematicPositionBased)
@@ -51,6 +54,7 @@ fn move_stick(
             if ball.side != Side::Neither {
                 continue;
             }
+            stick_transform.translation.y = 10.0;
             if keyboard.pressed(KeyCode::KeyR) {
                 stick_transform.look_at(ball_transform.translation, Vec3::Y);
                 stick_transform.rotate_around(
@@ -84,6 +88,7 @@ fn shoot_stick(
                     continue;
                 }
                 stick_transform.translation = ball_transform.translation;
+
                 break;
             }
         }

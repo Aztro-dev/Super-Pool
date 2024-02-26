@@ -66,7 +66,7 @@ pub struct Ball {
     pub superpower: Superpower,
 }
 
-const BALL_SIZE: f32 = 1.8;
+pub const BALL_SIZE: f32 = 1.8;
 
 fn spawn_balls(
     mut commands: Commands,
