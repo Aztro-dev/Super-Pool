@@ -154,6 +154,7 @@ fn ball(
     Friction,
     Velocity,
     Sleeping,
+    Ccd,
 ) {
     (
         ball,
@@ -171,5 +172,6 @@ fn ball(
             linear_threshold: 5.0,
             ..default()
         },
+        Ccd::enabled(),
     )
 }

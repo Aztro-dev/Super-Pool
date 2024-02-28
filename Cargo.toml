@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.13.0"
+bevy_mod_raycast = "0.17.0"
 bevy_rapier3d = "0.25.0"
 fastrand = "2.0.1"
 smooth-bevy-cameras = { git = "https://github.com/Aztro-dev/smooth-bevy-cameras.git", branch = "bevy-0.13"}

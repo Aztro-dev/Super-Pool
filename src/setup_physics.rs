@@ -10,7 +10,7 @@ pub fn setup_physics(mut commands: Commands) {
         .insert(Friction::coefficient(1.0));
 
     // Create the walls
-    const WALL_HEIGHT: f32 = 5.0;
+    const WALL_HEIGHT: f32 = 50.0; // Like really tall, man
     commands
         .spawn(Collider::cuboid(WALL_LENGTH, WALL_HEIGHT, 0.01))
         .insert(TransformBundle::from(Transform::from_xyz(
