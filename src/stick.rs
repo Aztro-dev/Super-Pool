@@ -70,15 +70,18 @@ fn move_stick(
                 );
                 stick_transform.rotate_local_y(PI / 2.0);
             }
-            break;
+            return;
         }
     }
 }
+
+const SHOOT_SPEED: f32 = 1.0;
 
 fn shoot_stick(
     mut stick_query: Query<&mut Transform, With<Stick>>,
     ball_query: Query<(&Ball, &Transform), Without<Stick>>,
     keyboard: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
 ) {
     if keyboard.pressed(KeyCode::Space) {
         if let Some(mut stick_transform) = stick_query.get_single_mut().ok() {
@@ -87,9 +90,20 @@ fn shoot_stick(
                 if ball.side != Side::Neither {
                     continue;
                 }
-                stick_transform.translation = ball_transform.translation;
-
-                break;
+                if ball_transform
+                    .translation
+                    .distance(stick_transform.translation)
+                    - STICK_LENGTH
+                    < 1.0
+                {
+                    stick_transform.translation.y = 10.0;
+                    stick_transform.translation.z = ball_transform.translation.z;
+                    stick_transform.look_at(ball_transform.translation, Vec3::Y); // Cue Ball pos
+                    stick_transform.rotate_local_y(PI / 2.0);
+                }
+                let direction = stick_transform.right();
+                stick_transform.translation += direction * SHOOT_SPEED * time.delta_seconds().exp();
+                return;
             }
         }
     }
