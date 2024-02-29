@@ -10,11 +10,33 @@ impl Plugin for StickPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<ShotPower>()
             .add_plugins(DefaultRaycastingPlugin)
+            .add_systems(Startup, setup)
             .add_systems(
                 Update,
-                shoot_stick.run_if(in_state(BallsMovingState::NotMoving)),
+                (
+                    shoot_stick.run_if(in_state(BallsMovingState::NotMoving)),
+                    show_current_shot_position,
+                ),
             );
     }
+}
+
+fn setup(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
+    commands
+        .spawn(PbrBundle {
+            mesh: meshes.add(Sphere::new(0.5).mesh().ico(7).unwrap()),
+            material: materials.add(StandardMaterial {
+                base_color: Color::GREEN,
+                ..default()
+            }),
+            visibility: Visibility::Hidden,
+            ..default()
+        })
+        .insert(ShotIndicator);
 }
 
 #[derive(Resource)]
@@ -28,6 +50,48 @@ impl Default for ShotPower {
 
 const SHOOTING_SPEED: f32 = 5_000.0;
 const MIN_SHOOTING_SPEED: f32 = 200.0;
+
+#[derive(Component)]
+struct ShotIndicator;
+
+fn show_current_shot_position(
+    cursor_ray: Res<CursorRay>,
+    mut raycast: Raycast,
+    ball_query: Query<(Entity, &Ball), With<Ball>>,
+    mut shot_query: Query<(&mut Transform, &mut Visibility), With<ShotIndicator>>,
+    ball_moving_state: Res<State<BallsMovingState>>,
+) {
+    let (mut transform, mut visibility) = shot_query.get_single_mut().unwrap();
+    if ball_moving_state.eq(&BallsMovingState::Moving) {
+        *visibility = Visibility::Hidden;
+        return;
+    }
+    if let Some(cursor_ray) = **cursor_ray {
+        for (entity, ball) in ball_query.iter() {
+            if ball.side != Side::Neither {
+                continue;
+            }
+            let data = raycast.cast_ray(
+                cursor_ray,
+                &RaycastSettings {
+                    filter: &|e| e.index() == entity.index(),
+                    ..default()
+                },
+            );
+            if data.is_empty() {
+                *visibility = Visibility::Hidden;
+                return;
+            }
+            *visibility = Visibility::Visible;
+            let intersection_data = data[0].clone().1;
+            transform.translation = intersection_data.position();
+            let direction = -intersection_data.normal();
+            transform.rotation =
+                Quat::from_euler(EulerRot::XYZ, direction.x, direction.y, direction.z);
+            return;
+        }
+    }
+}
 
 fn shoot_stick(
     mut commands: Commands,
