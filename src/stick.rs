@@ -83,8 +83,11 @@ fn show_current_shot_position(
                 return;
             }
             *visibility = Visibility::Visible;
+
             let intersection_data = data[0].clone().1;
+
             transform.translation = intersection_data.position();
+
             let direction = -intersection_data.normal();
             transform.rotation =
                 Quat::from_euler(EulerRot::XYZ, direction.x, direction.y, direction.z);

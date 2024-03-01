@@ -155,6 +155,7 @@ fn ball(
     Velocity,
     Sleeping,
     Ccd,
+    GravityScale,
 ) {
     (
         ball,
@@ -173,5 +174,6 @@ fn ball(
             ..default()
         },
         Ccd::enabled(),
+        GravityScale(10.0),
     )
 }
